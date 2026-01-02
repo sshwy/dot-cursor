@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ -n $(git status --porcelain) ]]; then
+  echo "Error: Uncommitted changes detected. Please commit or stash them before running this script."
+  exit 1
+fi
+
 # generate changelog
 git cliff -o CHANGELOG.md --bump
 
@@ -10,5 +15,6 @@ mv package.tmp.json package.json
 
 pnpm fmt
 
-# stage all changes
 git add .
+git commit -m "chore(version): bump to $version"
+git tag $version
