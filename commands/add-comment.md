@@ -37,7 +37,7 @@ pub fn rewind(&mut self) -> Result<(), std::io::Error> {
     let mut f = de.into_inner();
     f.rewind()?;
     self.de = Some(XzDecoder::new(f));
-    
+
     Ok(())
 }
 ```
@@ -46,7 +46,7 @@ Output #2:
 
 ```rust
 /// Rewinds the reader to the beginning of the file.
-/// 
+///
 /// Clears internal buffers, resets the EOF flag, and rewinds the file
 /// handle wrapped by the XzDecoder. If the underlying file does not support
 /// seeking, this will return an error.
@@ -59,7 +59,7 @@ pub fn rewind(&mut self) -> Result<(), std::io::Error> {
     let mut f = de.into_inner();
     f.rewind()?;
     self.de = Some(XzDecoder::new(f));
-    
+
     Ok(())
 }
 ```
