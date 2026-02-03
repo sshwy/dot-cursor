@@ -4,7 +4,9 @@ Write a brief and comprehensive description in English, describing the logic of 
 
 An optional instruction is given to direct the content of your description.
 
-The description should be formed as a single comment prefixed by `///`. Place it before the code snippet.
+The description should be formed as a single comment prefixed by `///`. Place it BEFORE the code snippet.
+
+DO NOT EDIT THE COMMENTS IN THE CODE SNIPPET.
 
 ## Examples
 
