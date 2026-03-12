@@ -30,7 +30,7 @@ Task Progress:
 - [ ] Step 1: 解析题意与约束
 - [ ] Step 2: 设计数据分层与参数方案
 - [ ] Step 3: 编写 gen.cpp（testlib）
-- [ ] Step 4: 编写 std.cpp（C++17）
+- [ ] Step 4: 编写 std.cpp（C++14）
 - [ ] Step 5: 编写 gen.sh（编译+10组数据）
 - [ ] Step 6: 执行 gen.sh 生成数据
 - [ ] Step 7: 自检与必要修复
@@ -82,13 +82,15 @@ int main(int argc, char* argv[]) {
 - 给出可通过目标约束的正确解，不依赖 `testlib`。
 - 优先可读与稳定实现，包含必要的边界处理。
 - 若存在多解策略，选复杂度最稳妥的一版。
+- 编写完成后，使用 `g++ -std=c++14 -O2 std.cpp -o std` 在题目目录下编译，确保无编译错误。
+- 若当前题目目录下存在 `sample1.in` 与 `sample1.out`，务必执行 `./std < sample1.in > sample1.tmp` 并对比 `sample1.out`，确认输出完全一致；若发现不一致，则视为当前 `std.cpp` 存在错误，需继续基于差异信息调试并修复，反复编译与比对，直至与 `sample1.out` 完全一致后方可进入后续步骤。
 
 ### Step 5: 编写 `gen.sh`
 
 - 使用 `set -euo pipefail`。
 - 编译：
   - `gen.cpp`：包含 `testlib` 头文件路径（例如 `-I./testlib`）。
-  - `std.cpp`：常规 `-O2 -std=c++17`。
+  - `std.cpp`：常规 `-O2 -std=c++14`。
 - 生成目录与数据：
   - `mkdir -p data`
   - 循环 1..10，按预设参数执行 `./gen ... > data/input$i.txt`
@@ -111,8 +113,8 @@ memory_limit 128
 #!/usr/bin/env bash
 set -euo pipefail
 
-g++ -std=c++17 -O2 -I./testlib gen.cpp -o gen
-g++ -std=c++17 -O2 std.cpp -o std
+g++ -std=c++14 -O2 -I./testlib gen.cpp -o gen
+g++ -std=c++14 -O2 std.cpp -o std
 
 mkdir -p data
 
