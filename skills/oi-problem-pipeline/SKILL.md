@@ -32,7 +32,7 @@ Task Progress:
 - [ ] Step 3: 编写 gen.cpp（testlib）
 - [ ] Step 4: 编写 std.cpp（C++14）
 - [ ] Step 5: 编写 gen.sh（编译+10组数据）
-- [ ] Step 6: 执行 gen.sh 生成数据
+- [ ] Step 6: 执行 `bash gen.sh` 生成数据
 - [ ] Step 7: 自检与必要修复
 ```
 
