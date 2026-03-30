@@ -13,6 +13,7 @@ description: 从包含 desc.md、input.md、output.md、std.cpp、gen.cpp 的题
   - `output.md`：输出格式与语义。
   - `std.cpp`：参考解（标程）。
   - `gen.cpp`：使用 `testlib.h` 的数据生成器。
+  - `gen.sh`：批量生成数据的脚本。
 - 目标是在该目录下实现或更新 `chk.cpp`，使用 Codeforces Testlib 对选手输出进行判定。
 - 特别适合：
   - “平台/石头 + 最大跳跃距离 + 是否可达”之类的构造或判断题。
@@ -142,6 +143,30 @@ description: 从包含 desc.md、input.md、output.md、std.cpp、gen.cpp 的题
        - 判断能否一次从 0 跳到 `n+1`。
      - 若题面保证某些条件（如 `m >= 1`、`sum c_i <= n` 等），而实际输入违反，应使用 `_fail` 报题面/数据错误。
 
+8. **编译与使用建议**
+
+   - 默认使用：
+     ```bash
+     g++ -std=c++14 H/chk.cpp -Itestlib -o chk
+     ```
+   - 如果题目目录下存在 `data/` 文件夹，且其中包含 `input1.txt` 与 `output1.txt`：
+     1. 在题目目录下先用标程生成 `data/output1.txt`（若尚未生成）。
+     2. 然后在题目目录下执行：
+        ```bash
+        ./chk data/input1.txt data/output1.txt data/output1.txt
+        ```
+        用 `chk` 同时作为验证器来检查“标程作为选手”的情况，以验证答案生成器与 checker 的一致性。
+   - 生成器通常形如：
+     ```cpp
+     #include "testlib.h"
+     int main(int argc, char* argv[]) {
+         registerGen(argc, argv, 1);
+         // ...
+     }
+     ```
+     在 checker 中改用 `registerTestlibCmd(argc, argv);`。
+   - 保持与现有 `gen.cpp`、`std.cpp` 一致的风格；只在非直观的判定处写少量解释性注释，避免冗长。
+
 ## 执行流程
 
 复制并维护下列进度清单（可按题目标号替换 `H/`）：
@@ -154,6 +179,7 @@ Task Progress:
 - [ ] Step 4: 实现结构性与语义性检查
 - [ ] Step 5: 编译 chk.cpp 并用样例/数据自测
 - [ ] Step 6: 必要时修复并重复验证
+- [ ] Step 7: 同步评测配置文件
 ```
 
 ### Step 1: 读取题面与格式说明
@@ -209,29 +235,14 @@ Task Progress:
   - 按需修正 `chk.cpp`（尽量只放宽/收紧真正需要调整的条件），重新编译并重复 Step 5。
 - 只有在样例与 `data/` 下都表现稳定后，再把 checker 作为最终结果交付或投入评测使用。
 
-8. **编译与使用建议**
+### Step 7: 同步评测配置文件
 
-   - 默认使用：
-     ```bash
-     g++ -std=c++14 H/chk.cpp -Itestlib -o chk
-     ```
-   - 如果题目目录下存在 `data/` 文件夹，且其中包含 `input1.txt` 与 `output1.txt`：
-     1. 在题目目录下先用标程生成 `data/output1.txt`（若尚未生成）。
-     2. 然后在题目目录下执行：
-        ```bash
-        ./chk data/input1.txt data/output1.txt data/output1.txt
-        ```
-        用 `chk` 同时作为验证器来检查“标程作为选手”的情况，以验证答案生成器与 checker 的一致性。
-   - 生成器通常形如：
-     ```cpp
-     #include "testlib.h"
-     int main(int argc, char* argv[]) {
-         registerGen(argc, argv, 1);
-         // ...
-     }
-     ```
-     在 checker 中改用 `registerTestlibCmd(argc, argv);`。
-   - 保持与现有 `gen.cpp`、`std.cpp` 一致的风格；只在非直观的判定处写少量解释性注释，避免冗长。
+- 修改题目目录下的 `gen.sh`，加入：
+  ```bash
+  cp chk.cpp data/chk.cpp
+  ```
+  以确保生成数据后，checker 会被同步到 `data/` 目录。
+- 修改 `data/problem.conf`，删除 `use_builtin_judger` 配置，避免与自定义 `chk.cpp` 的评测方式冲突。
 
 ## 简要示例（本次聊天对应题型）
 
