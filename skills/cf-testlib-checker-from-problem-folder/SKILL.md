@@ -242,7 +242,7 @@ Task Progress:
   cp chk.cpp data/chk.cpp
   ```
   以确保生成数据后，checker 会被同步到 `data/` 目录。
-- 修改 `data/problem.conf`，删除 `use_builtin_judger` 配置，避免与自定义 `chk.cpp` 的评测方式冲突。
+- 修改 `data/problem.conf`，删除 `use_builtin_checker` 配置，避免与自定义 `chk.cpp` 的评测方式冲突。
 
 ## 简要示例（本次聊天对应题型）
 

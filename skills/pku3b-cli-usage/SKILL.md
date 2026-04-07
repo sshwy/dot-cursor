@@ -1,11 +1,13 @@
 ---
 name: pku3b-cli-usage
-description: Summarizes the pku3b CLI for PKU students, including commands for assignments, course videos, course selection, captcha recognition, Bark notifications, configuration, and cache management. Use when the user mentions pku3b or wants to check or automate PKU course information and operations from the command line.
+description: Summarizes the pku3b CLI for PKU students—assignments (list/download/submit), coursetable, course announcements, video replays, syllabus and auto add/drop, thesis library search/download, ttshitu captcha, Bark push, init, config, cache, and nested help. Use when the user mentions pku3b or wants CLI usage, options, aliases, or typical workflows for PKU course and related tasks.
 ---
 
 # pku3b CLI Usage
 
 `pku3b` 是面向北大同学的命令行工具，用于查询/操作课程信息（作业、回放、选课）、验证码识别、通知推送等。
+
+`pku3b` 较新版本还支持个人课表、课程公告、学位论文检索与下载等能力（见下文 **coursetable**、**announcement**、**thesis-lib**）。
 
 ## 总览
 
@@ -20,14 +22,19 @@ description: Summarizes the pku3b CLI for PKU students, including commands for a
 ### 顶层命令一览
 
 - `assignment` (`a`): 作业列表、下载、提交
+- `coursetable` (`ct`): 获取个人课表
+- `announcement` (`ann`): 获取课程公告
 - `video` (`v`): 课程回放列表与下载
 - `syllabus` (`s`): 选课相关操作与自动补退选
 - `ttshitu` (`tt`): 图形验证码识别账户配置与测试
 - `bark` (`b`): Bark 通知令牌配置与测试
+- `thesis-lib` (`th`): 学位论文检索与下载
 - `init`: 初始化/重设用户名密码
 - `config`: 查看或修改配置项
 - `cache`: 查看或清理缓存
 - `help`: 显示帮助或查看子命令帮助
+
+**子命令别名（节选）**: `assignment` 下 `list`→`ls`、`download`→`down`、`submit`→`sb`；`announcement` 下 `list`→`ls`；`video` 下 `list`→`ls`、`download`→`down`；`thesis-lib` 下 `download`→`down`。完整列表以 `pku3b help <命令>` 为准。
 
 ---
 
@@ -40,6 +47,8 @@ description: Summarizes the pku3b CLI for PKU students, including commands for a
 ```bash
 pku3b assignment [OPTIONS] <COMMAND>
 ```
+
+也可用别名 `pku3b a ...`。
 
 **通用选项**:
 
@@ -105,6 +114,78 @@ pku3b assignment submit f4f30444c7485d49 report.pdf
 
 ---
 
+## coursetable: 个人课表
+
+获取个人课表。
+
+```bash
+pku3b coursetable [OPTIONS]
+```
+
+也可用别名 `pku3b ct ...`。
+
+- `-f, --force`: 强制刷新远端数据
+- `-r, --raw`: 显示原始 JSON 数据（用于调试）
+- `-h, --help`: 显示当前命令帮助
+
+示例：
+
+```bash
+pku3b coursetable
+pku3b coursetable -f
+pku3b coursetable -r
+```
+
+---
+
+## announcement: 课程公告
+
+获取课程公告列表与详情。
+
+**入口**:
+
+```bash
+pku3b announcement [OPTIONS] <COMMAND>
+```
+
+也可用别名 `pku3b ann ...`。
+
+**通用选项**:
+
+- `-f, --force`: 强制刷新远端数据
+- `-h, --help`: 显示当前命令帮助
+
+### announcement list
+
+查看课程公告列表。
+
+```bash
+pku3b announcement list [OPTIONS]
+```
+
+- `--all-term`: 显示所有学期的课程公告
+
+### announcement show
+
+按 ID 查看公告详情。
+
+```bash
+pku3b announcement show [OPTIONS] <ID>
+```
+
+- `<ID>`: 公告 ID（可通过 `pku3b announcement ls` 查看）
+- `--all-term`: 在所有学期的课程公告范围中查找
+
+示例：
+
+```bash
+pku3b announcement list
+pku3b announcement list --all-term
+pku3b announcement show <公告ID>
+```
+
+---
+
 ## video: 课程回放
 
 获取课程回放列表与下载课程回放视频（MP4，支持断点续传）。
@@ -114,6 +195,8 @@ pku3b assignment submit f4f30444c7485d49 report.pdf
 ```bash
 pku3b video [OPTIONS] <COMMAND>
 ```
+
+也可用别名 `pku3b v ...`。
 
 **通用选项**:
 
@@ -166,6 +249,8 @@ pku3b video download -o ~/Videos/pku e780808c9eb81f61
 pku3b syllabus [OPTIONS] <COMMAND>
 ```
 
+也可用别名 `pku3b s ...`。
+
 **通用选项**:
 
 - `-d, --dual <DUAL>`: 双学位类型，可选值：
@@ -207,7 +292,7 @@ pku3b syllabus unset
 pku3b syllabus launch [OPTIONS]
 ```
 
-- `-t, --interval <INTERVAL>`: 轮询等待间隔（秒），默认 15（帮助文本中说明“默认为 5s”，以实际实现为准）。
+- `-t, --interval <INTERVAL>`: 轮询等待间隔（秒）。帮助里写「默认为 5s」，同时标注 `[default: 15]`，以你本机 `pku3b help syllabus launch` 与实际行为为准。
 
 示例：
 
@@ -230,6 +315,8 @@ pku3b syllabus launch -t 5
 ```bash
 pku3b ttshitu <COMMAND>
 ```
+
+也可用别名 `pku3b tt ...`。
 
 ### ttshitu init
 
@@ -261,6 +348,8 @@ pku3b ttshitu test [IMAGE_PATH]
 pku3b bark <COMMAND>
 ```
 
+也可用别名 `pku3b b ...`。
+
 ### bark init
 
 初始化 Bark 通知令牌（设置 `bark.token` 配置）。
@@ -275,6 +364,48 @@ pku3b bark init
 
 ```bash
 pku3b bark test
+```
+
+---
+
+## thesis-lib: 学位论文检索
+
+搜索学位论文，并将下载结果转换为 PDF（见各子命令帮助）。
+
+**入口**:
+
+```bash
+pku3b thesis-lib <COMMAND>
+```
+
+也可用别名 `pku3b th ...`。
+
+### thesis-lib search
+
+```bash
+pku3b thesis-lib search <KEYWORD>
+```
+
+- `<KEYWORD>`: 搜索关键词
+
+### thesis-lib download
+
+下载学位论文并转换为 PDF 文件。
+
+```bash
+pku3b thesis-lib download [OPTIONS] <KEYID>
+```
+
+- `<KEYID>`: 学位论文 ID（形如 `pku3b help thesis-lib download` 中给出的示例格式，可通过 `pku3b th search <KEYWORD>` 的结果查看）
+- `-o, --outdir <OUTDIR>`: 文件下载目录（支持相对路径）
+- `-j, --job <JOB>`: 并发下载页数，默认 `5`
+- `--save-image`: 是否保存每一页的图片
+
+示例：
+
+```bash
+pku3b thesis-lib search 关键词
+pku3b thesis-lib download -o ~/Downloads/thesis <KEYID>
 ```
 
 ---
@@ -369,6 +500,8 @@ pku3b help video
 # 查看更深层子命令帮助
 pku3b help assignment download
 pku3b help syllabus launch
+pku3b help announcement show
+pku3b help thesis-lib download
 ```
 
 ---
@@ -389,6 +522,13 @@ pku3b help syllabus launch
 - **提交作业**:
   - `pku3b assignment submit [ID] [PATH]`
 
+- **个人课表**:
+  - `pku3b coursetable`（调试可加 `-r` 看原始 JSON）
+
+- **课程公告**:
+  - `pku3b announcement list [--all-term]`
+  - `pku3b announcement show [--all-term] <ID>`
+
 - **查看/下载课程回放**:
   - `pku3b video list [--all-term]`
   - `pku3b video download [--all-term] [-o OUTDIR] <ID>`
@@ -397,9 +537,14 @@ pku3b help syllabus launch
   - `pku3b syllabus set` / `unset`
   - `pku3b syllabus launch [-t INTERVAL]`
 
+- **学位论文**:
+  - `pku3b thesis-lib search <KEYWORD>`
+  - `pku3b thesis-lib download [-o OUTDIR] [-j JOB] [--save-image] <KEYID>`
+
 - **维护与清理**:
   - `pku3b cache show` / `clean`
   - `pku3b config [ATTR] [VALUE]`
 
 本 skill 总结自 `pku3b -h` 与各子命令 `pku3b help [args]` 的输出，可在使用中作为快捷参考。
 
+若你安装的 `pku3b` 版本与本 skill 中的命令/选项不一致，请以本机 `pku3b -h` 与 `pku3b help` 为准。
